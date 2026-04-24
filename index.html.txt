@@ -1,0 +1,2295 @@
+
+bash
+
+python3 << 'PYEOF'
+import os
+
+names = ["logo","hero","polimento","higienizacao","interior1","injecao","dashboard","foam","gear"]
+imgs = {}
+for n in names:
+    with open(f"/home/claude/{n}.b64") as f:
+        imgs[n] = f.read().strip()
+
+html = f'''<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Estética Automotiva CJ | Polimento & Vitrificação Premium em Araçatuba/SP</title>
+<meta name="description" content="A estética automotiva mais premiada de Araçatuba/SP. Polimento técnico, vitrificação cerâmica, higienização profunda. Resultado que você enxerga.">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="Estética Automotiva CJ | Premium Araçatuba">
+<meta property="og:description" content="Seu carro com padrão de vitrine premium. Agende agora.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Outfit:wght@200;300;400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+
+<style>
+/* ================================================
+   RESET & CUSTOM PROPERTIES
+================================================ */
+*, *::before, *::after {{ box-sizing: border-box; margin: 0; padding: 0; }}
+
+:root {{
+  --gold: #c9a227;
+  --gold-2: #e8c547;
+  --gold-3: #a07c15;
+  --gold-glow: rgba(201,162,39,0.35);
+  --black: #06060a;
+  --black-2: #0b0b10;
+  --black-3: #111118;
+  --black-4: #16161f;
+  --white: #f8f8ff;
+  --gray: #8888a0;
+  --gray-2: #c8c8dc;
+  --font-display: 'Playfair Display', serif;
+  --font-body: 'Outfit', sans-serif;
+  --font-hero: 'Bebas Neue', sans-serif;
+  --ease: cubic-bezier(.16,1,.3,1);
+  --ease-2: cubic-bezier(.25,.46,.45,.94);
+}}
+
+html {{ scroll-behavior: smooth; font-size: 16px; }}
+body {{
+  font-family: var(--font-body);
+  background: var(--black);
+  color: var(--white);
+  overflow-x: hidden;
+  cursor: none;
+}}
+body.no-scroll {{ overflow: hidden; }}
+img {{ display: block; max-width: 100%; }}
+a {{ text-decoration: none; color: inherit; cursor: none; }}
+button {{ cursor: none; }}
+
+/* ================================================
+   CUSTOM CURSOR
+================================================ */
+#cursor {{
+  position: fixed; top: 0; left: 0; z-index: 9999;
+  pointer-events: none; mix-blend-mode: difference;
+}}
+.cursor-dot {{
+  width: 8px; height: 8px; background: var(--white);
+  border-radius: 50%; position: fixed; top: -4px; left: -4px;
+  transform: translate(var(--x,0), var(--y,0));
+  transition: width .15s var(--ease), height .15s var(--ease), opacity .15s;
+}}
+.cursor-ring {{
+  width: 36px; height: 36px;
+  border: 1px solid rgba(201,162,39,0.7);
+  border-radius: 50%; position: fixed; top: -18px; left: -18px;
+  transform: translate(var(--rx,0), var(--ry,0));
+  transition: width .4s var(--ease), height .4s var(--ease),
+              border-color .3s, background .3s, opacity .3s;
+}}
+body.cursor-hover .cursor-ring {{
+  width: 64px; height: 64px; border-color: var(--gold);
+  background: var(--gold-glow);
+}}
+body.cursor-hover .cursor-dot {{ opacity: 0; }}
+
+/* ================================================
+   SCROLL PROGRESS BAR
+================================================ */
+#progress-bar {{
+  position: fixed; top: 0; left: 0; right: 0; height: 2px;
+  z-index: 1001; background: rgba(255,255,255,0.06);
+}}
+#progress-fill {{
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--gold-3), var(--gold), var(--gold-2));
+  transition: width .1s linear;
+  box-shadow: 0 0 10px var(--gold-glow);
+}}
+
+/* ================================================
+   LOADER
+================================================ */
+#loader {{
+  position: fixed; inset: 0; z-index: 9998;
+  background: var(--black);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 32px;
+  transition: opacity .8s var(--ease), visibility .8s;
+}}
+#loader.hidden {{ opacity: 0; visibility: hidden; }}
+.loader-logo {{
+  font-family: var(--font-hero); font-size: 4rem;
+  letter-spacing: .15em; color: var(--white);
+  animation: loaderPulse 1.5s ease-in-out infinite;
+}}
+.loader-logo span {{ color: var(--gold); }}
+@keyframes loaderPulse {{
+  0%, 100% {{ opacity: .4; transform: scale(0.97); }}
+  50% {{ opacity: 1; transform: scale(1); }}
+}}
+.loader-bar {{
+  width: 200px; height: 1px; background: rgba(255,255,255,.1);
+  position: relative; overflow: hidden;
+}}
+.loader-bar::after {{
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  animation: loaderSlide 1.5s ease-in-out infinite;
+}}
+@keyframes loaderSlide {{
+  0% {{ transform: translateX(-100%); }}
+  100% {{ transform: translateX(100%); }}
+}}
+
+/* ================================================
+   SCROLLBAR
+================================================ */
+::-webkit-scrollbar {{ width: 4px; }}
+::-webkit-scrollbar-track {{ background: var(--black); }}
+::-webkit-scrollbar-thumb {{ background: var(--gold-3); border-radius: 2px; }}
+
+/* ================================================
+   NAVIGATION
+================================================ */
+#nav {{
+  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+  padding: 24px 6%;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: padding .5s var(--ease), background .5s;
+}}
+#nav.scrolled {{
+  padding: 14px 6%;
+  background: rgba(6,6,10,.92);
+  backdrop-filter: blur(24px) saturate(160%);
+  border-bottom: 1px solid rgba(201,162,39,.1);
+}}
+.nav-brand {{
+  display: flex; align-items: center; gap: 14px;
+}}
+.nav-brand-img {{
+  width: 48px; height: 48px; object-fit: contain; border-radius: 50%;
+  transition: transform .4s var(--ease);
+}}
+.nav-brand:hover .nav-brand-img {{ transform: rotate(8deg) scale(1.05); }}
+.nav-brand-text {{ display: flex; flex-direction: column; }}
+.nav-brand-sub {{
+  font-size: .65rem; letter-spacing: .25em; text-transform: uppercase;
+  color: var(--gold); font-weight: 500;
+}}
+.nav-brand-name {{
+  font-family: var(--font-hero); font-size: 1.4rem; letter-spacing: .08em;
+  line-height: 1; color: var(--white);
+}}
+nav.nav-links ul {{
+  display: flex; gap: 40px; list-style: none;
+}}
+nav.nav-links a {{
+  font-size: .78rem; font-weight: 500; letter-spacing: .18em;
+  text-transform: uppercase; color: var(--gray-2);
+  position: relative; padding-bottom: 4px;
+  transition: color .3s;
+}}
+nav.nav-links a::after {{
+  content: ''; position: absolute; bottom: 0; left: 50%; right: 50%;
+  height: 1px; background: var(--gold);
+  transition: left .3s var(--ease), right .3s var(--ease);
+}}
+nav.nav-links a:hover {{ color: var(--gold); }}
+nav.nav-links a:hover::after {{ left: 0; right: 0; }}
+.nav-cta {{
+  font-size: .78rem; font-weight: 700; letter-spacing: .18em;
+  text-transform: uppercase;
+  background: var(--gold); color: var(--black);
+  padding: 12px 28px; border-radius: 1px;
+  transition: background .3s, transform .3s var(--ease), box-shadow .3s;
+  box-shadow: 0 4px 20px rgba(201,162,39,.25);
+}}
+.nav-cta:hover {{
+  background: var(--gold-2);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 40px rgba(201,162,39,.4);
+}}
+
+/* Hamburger */
+.hamburger {{
+  display: none; flex-direction: column; gap: 6px;
+  background: none; border: none; padding: 6px;
+}}
+.hamburger span {{
+  width: 28px; height: 1.5px; background: var(--white);
+  display: block; transition: transform .4s var(--ease), opacity .3s;
+}}
+.hamburger.active span:nth-child(1) {{ transform: rotate(45deg) translate(5.5px,5.5px); }}
+.hamburger.active span:nth-child(2) {{ opacity: 0; }}
+.hamburger.active span:nth-child(3) {{ transform: rotate(-45deg) translate(5.5px,-5.5px); }}
+
+/* Mobile menu */
+#mobile-nav {{
+  position: fixed; inset: 0; z-index: 997;
+  background: rgba(6,6,10,.98); backdrop-filter: blur(30px);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 44px; opacity: 0; visibility: hidden;
+  transition: opacity .5s var(--ease), visibility .5s;
+}}
+#mobile-nav.open {{ opacity: 1; visibility: visible; }}
+#mobile-nav a {{
+  font-family: var(--font-display); font-size: 2.4rem;
+  color: var(--white); transition: color .3s, transform .3s;
+  transform: translateY(20px); opacity: 0;
+  transition: color .3s, transform .5s var(--ease), opacity .5s var(--ease);
+}}
+#mobile-nav.open a {{
+  transform: translateY(0); opacity: 1;
+}}
+#mobile-nav.open a:nth-child(1) {{ transition-delay: .1s; }}
+#mobile-nav.open a:nth-child(2) {{ transition-delay: .15s; }}
+#mobile-nav.open a:nth-child(3) {{ transition-delay: .2s; }}
+#mobile-nav.open a:nth-child(4) {{ transition-delay: .25s; }}
+#mobile-nav.open a:nth-child(5) {{ transition-delay: .3s; }}
+#mobile-nav a:hover {{ color: var(--gold); }}
+
+/* ================================================
+   HERO — 3D PARALLAX SECTIONS
+================================================ */
+#hero {{
+  position: relative; min-height: 100vh;
+  display: flex; align-items: center;
+  overflow: hidden;
+}}
+
+/* Particle canvas */
+#hero-canvas {{
+  position: absolute; inset: 0; z-index: 1;
+  pointer-events: none;
+}}
+
+/* Layered parallax bg */
+.hero-bg {{
+  position: absolute; inset: -10%;
+  background-image: url('data:image/jpeg;base64,{imgs["hero"]}');
+  background-size: cover; background-position: center;
+  will-change: transform;
+}}
+.hero-overlay {{
+  position: absolute; inset: 0; z-index: 2;
+  background:
+    linear-gradient(100deg, rgba(6,6,10,.95) 0%, rgba(6,6,10,.7) 55%, rgba(6,6,10,.2) 100%),
+    linear-gradient(to top, rgba(6,6,10,.8) 0%, transparent 50%);
+}}
+
+/* Animated grain */
+.hero-grain {{
+  position: absolute; inset: 0; z-index: 3; pointer-events: none; opacity: .04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  animation: grainAnim 0.4s steps(1) infinite;
+}}
+@keyframes grainAnim {{
+  0% {{ transform: translate(0,0); }}
+  20% {{ transform: translate(-5%,-5%); }}
+  40% {{ transform: translate(-10%,5%); }}
+  60% {{ transform: translate(5%,-10%); }}
+  80% {{ transform: translate(-5%,15%); }}
+  100% {{ transform: translate(10%,5%); }}
+}}
+
+/* Floating decorative lines */
+.hero-lines {{
+  position: absolute; right: 0; top: 0; bottom: 0; width: 50%; z-index: 3; pointer-events: none;
+}}
+.hero-line {{
+  position: absolute; right: 10%; height: 1px;
+  background: linear-gradient(to left, transparent, rgba(201,162,39,.4), transparent);
+}}
+
+.hero-content {{
+  position: relative; z-index: 10; padding: 0 6%; max-width: 900px;
+}}
+.hero-tag {{
+  display: inline-flex; align-items: center; gap: 12px; margin-bottom: 36px;
+  animation: fadeUp .8s .3s both;
+}}
+.hero-tag-line {{
+  width: 40px; height: 1px; background: var(--gold);
+}}
+.hero-tag-text {{
+  font-size: .72rem; font-weight: 600; letter-spacing: .28em; text-transform: uppercase;
+  color: var(--gold);
+}}
+
+.hero-h1 {{
+  font-family: var(--font-hero);
+  font-size: clamp(4rem, 9vw, 9rem);
+  line-height: .92; letter-spacing: .02em;
+  margin-bottom: 30px;
+  animation: fadeUp .8s .5s both;
+}}
+.hero-h1 .line-1 {{ color: var(--white); display: block; }}
+.hero-h1 .line-2 {{
+  display: block;
+  background: linear-gradient(90deg, var(--gold-3), var(--gold), var(--gold-2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}}
+.hero-h1 .line-3 {{ color: rgba(255,255,255,.15); display: block; }}
+
+.hero-desc {{
+  font-size: 1.05rem; font-weight: 300; color: var(--gray-2);
+  max-width: 480px; line-height: 1.8; margin-bottom: 52px;
+  animation: fadeUp .8s .7s both;
+}}
+
+.hero-btns {{
+  display: flex; gap: 16px; flex-wrap: wrap;
+  animation: fadeUp .8s .9s both;
+}}
+
+@keyframes fadeUp {{
+  from {{ opacity: 0; transform: translateY(40px); }}
+  to {{ opacity: 1; transform: translateY(0); }}
+}}
+
+/* Stats bar */
+.hero-stats {{
+  position: absolute; bottom: 0; left: 0; right: 0; z-index: 10;
+  display: flex;
+  border-top: 1px solid rgba(201,162,39,.12);
+  animation: fadeUp .8s 1.1s both;
+}}
+.stat-block {{
+  flex: 1; padding: 28px 6%;
+  border-right: 1px solid rgba(201,162,39,.08);
+  position: relative; overflow: hidden;
+  transition: background .4s;
+}}
+.stat-block:last-child {{ border-right: none; }}
+.stat-block::before {{
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(201,162,39,.05), transparent);
+  opacity: 0; transition: opacity .4s;
+}}
+.stat-block:hover::before {{ opacity: 1; }}
+.stat-num {{
+  font-family: var(--font-hero); font-size: 2.8rem; color: var(--gold); line-height: 1;
+  letter-spacing: .05em;
+}}
+.stat-label {{
+  font-size: .7rem; font-weight: 500; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--gray); margin-top: 4px;
+}}
+
+/* ================================================
+   BUTTONS (MAGNETIC)
+================================================ */
+.btn-magnetic {{
+  display: inline-flex; align-items: center; gap: 12px;
+  position: relative; overflow: hidden;
+  transition: transform .3s var(--ease);
+}}
+.btn-gold {{
+  background: var(--gold); color: var(--black);
+  padding: 18px 40px; font-size: .82rem; font-weight: 700;
+  letter-spacing: .18em; text-transform: uppercase; border-radius: 1px;
+  box-shadow: 0 8px 32px rgba(201,162,39,.3);
+  transition: background .3s, box-shadow .3s, transform .3s var(--ease);
+}}
+.btn-gold::before {{
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,.2), transparent 70%);
+  transform: translateX(-100%);
+  transition: transform .6s var(--ease);
+}}
+.btn-gold:hover::before {{ transform: translateX(100%); }}
+.btn-gold:hover {{
+  background: var(--gold-2); box-shadow: 0 16px 48px rgba(201,162,39,.5);
+}}
+.btn-outline {{
+  border: 1px solid rgba(255,255,255,.25); color: var(--white);
+  padding: 17px 38px; font-size: .82rem; font-weight: 600;
+  letter-spacing: .18em; text-transform: uppercase; border-radius: 1px;
+  transition: border-color .3s, background .3s, transform .3s var(--ease);
+  backdrop-filter: blur(10px);
+}}
+.btn-outline:hover {{
+  border-color: var(--gold); background: rgba(201,162,39,.08);
+}}
+.btn-icon {{ width: 18px; height: 18px; flex-shrink: 0; }}
+
+/* ================================================
+   SECTION COMMON
+================================================ */
+.section {{ padding: 120px 0; }}
+.container {{ max-width: 1280px; margin: 0 auto; padding: 0 6%; }}
+.section-eyebrow {{
+  display: flex; align-items: center; gap: 14px; margin-bottom: 20px;
+}}
+.eyebrow-line {{ width: 32px; height: 1px; background: var(--gold); flex-shrink: 0; }}
+.eyebrow-text {{
+  font-size: .7rem; font-weight: 600; letter-spacing: .28em;
+  text-transform: uppercase; color: var(--gold);
+}}
+h2.section-title {{
+  font-family: var(--font-display); font-size: clamp(2.2rem, 4.5vw, 3.5rem);
+  font-weight: 700; line-height: 1.12;
+}}
+h2.section-title .accent {{ color: var(--gold); }}
+.section-divider {{
+  width: 48px; height: 2px; margin: 24px 0;
+  background: linear-gradient(to right, var(--gold), transparent);
+}}
+
+/* Reveal animations */
+.reveal-up {{
+  opacity: 0; transform: translateY(50px);
+  transition: opacity .9s var(--ease), transform .9s var(--ease);
+}}
+.reveal-up.in {{ opacity: 1; transform: translateY(0); }}
+
+.reveal-left {{
+  opacity: 0; transform: translateX(-50px);
+  transition: opacity .9s var(--ease), transform .9s var(--ease);
+}}
+.reveal-left.in {{ opacity: 1; transform: translateX(0); }}
+
+.reveal-right {{
+  opacity: 0; transform: translateX(50px);
+  transition: opacity .9s var(--ease), transform .9s var(--ease);
+}}
+.reveal-right.in {{ opacity: 1; transform: translateX(0); }}
+
+.reveal-scale {{
+  opacity: 0; transform: scale(.92);
+  transition: opacity .9s var(--ease), transform .9s var(--ease);
+}}
+.reveal-scale.in {{ opacity: 1; transform: scale(1); }}
+
+/* ================================================
+   SERVICES — 3D FLIP CARDS
+================================================ */
+#servicos {{ background: var(--black-2); }}
+.services-header {{
+  display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
+  align-items: end; margin-bottom: 80px;
+}}
+.services-header-desc {{
+  font-size: 1rem; color: var(--gray); line-height: 1.85;
+  padding-top: 20px; border-top: 1px solid rgba(255,255,255,.06);
+}}
+
+.cards-3d-grid {{
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}}
+
+.card-3d-wrap {{
+  perspective: 900px;
+  height: 480px;
+}}
+.card-3d {{
+  width: 100%; height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform .8s var(--ease);
+  border-radius: 2px;
+}}
+.card-3d-wrap:hover .card-3d {{
+  transform: rotateY(180deg);
+}}
+.card-face {{
+  position: absolute; inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 2px; overflow: hidden;
+}}
+.card-front {{
+  background: var(--black-3);
+  border: 1px solid rgba(255,255,255,.05);
+  display: flex; flex-direction: column;
+}}
+.card-front-img {{
+  width: 100%; height: 220px; object-fit: cover;
+  transition: transform .6s var(--ease);
+}}
+.card-front-body {{ padding: 28px 24px; flex: 1; }}
+.card-front-num {{
+  font-size: .66rem; font-weight: 600; letter-spacing: .22em;
+  color: var(--gold-3); text-transform: uppercase; margin-bottom: 10px;
+}}
+.card-front-title {{
+  font-family: var(--font-display); font-size: 1.2rem; font-weight: 700;
+  margin-bottom: 12px; line-height: 1.25;
+}}
+.card-front-price {{
+  display: flex; align-items: baseline; gap: 6px; margin-top: auto;
+}}
+.price-from-label {{
+  font-size: .68rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--gray);
+}}
+.price-amount {{
+  font-family: var(--font-display); font-size: 1.8rem;
+  font-weight: 700; color: var(--gold);
+}}
+.card-flip-hint {{
+  font-size: .65rem; letter-spacing: .15em; text-transform: uppercase;
+  color: var(--gray); margin-top: 12px;
+  display: flex; align-items: center; gap: 6px;
+}}
+.card-flip-hint svg {{
+  width: 12px; height: 12px; stroke: var(--gray); fill: none;
+  animation: hintRotate 2s ease-in-out infinite;
+}}
+@keyframes hintRotate {{
+  0%, 100% {{ transform: rotate(0deg); }}
+  50% {{ transform: rotate(180deg); }}
+}}
+
+.card-back {{
+  background: linear-gradient(135deg, #0e0b02, #1a1408);
+  border: 1px solid rgba(201,162,39,.3);
+  transform: rotateY(180deg);
+  display: flex; flex-direction: column;
+  justify-content: space-between;
+  padding: 36px 28px;
+}}
+.card-back-tag {{
+  font-size: .65rem; font-weight: 700; letter-spacing: .28em;
+  text-transform: uppercase; color: var(--gold);
+  margin-bottom: 20px;
+}}
+.card-back-title {{
+  font-family: var(--font-display); font-size: 1.5rem; font-weight: 700;
+  line-height: 1.2; margin-bottom: 20px;
+}}
+.card-back-list {{ list-style: none; margin-bottom: 28px; }}
+.card-back-list li {{
+  font-size: .88rem; color: var(--gray-2); padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+  display: flex; align-items: center; gap: 10px;
+}}
+.card-back-list li::before {{
+  content: ''; width: 6px; height: 6px; background: var(--gold);
+  border-radius: 50%; flex-shrink: 0;
+}}
+.card-back-price {{
+  font-family: var(--font-display); font-size: 2.2rem;
+  font-weight: 900; color: var(--gold);
+}}
+.card-back-note {{
+  font-size: .72rem; color: var(--gray); margin-top: 4px;
+}}
+.card-back-cta {{
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--gold); color: var(--black);
+  padding: 14px 24px; font-size: .78rem; font-weight: 700;
+  letter-spacing: .15em; text-transform: uppercase;
+  border-radius: 1px; margin-top: 20px;
+  transition: background .3s, transform .3s;
+}}
+.card-back-cta:hover {{
+  background: var(--gold-2); transform: translateY(-2px);
+}}
+
+/* ================================================
+   BEFORE/AFTER SLIDER
+================================================ */
+#resultados {{ background: var(--black); overflow: hidden; }}
+.slider-container {{
+  position: relative; overflow: hidden;
+  border-radius: 2px; border: 1px solid rgba(201,162,39,.15);
+  max-width: 900px; margin: 60px auto 0;
+  user-select: none; touch-action: none;
+}}
+.slider-before {{
+  position: absolute; inset: 0;
+  background-image: url('data:image/jpeg;base64,{imgs["higienizacao"]}');
+  background-size: cover; background-position: center;
+  filter: grayscale(80%) brightness(.7);
+}}
+.slider-after {{
+  position: absolute; inset: 0;
+  background-image: url('data:image/jpeg;base64,{imgs["polimento"]}');
+  background-size: cover; background-position: center;
+  clip-path: inset(0 50% 0 0);
+  transition: clip-path 0s;
+}}
+.slider-divider {{
+  position: absolute; top: 0; bottom: 0; left: 50%;
+  width: 2px; background: var(--gold); z-index: 10;
+  transform: translateX(-50%);
+  box-shadow: 0 0 20px rgba(201,162,39,.5);
+}}
+.slider-handle {{
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 52px; height: 52px; border-radius: 50%;
+  background: var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 30px rgba(201,162,39,.6);
+  transition: transform .2s var(--ease), box-shadow .2s;
+}}
+.slider-handle:hover {{
+  transform: translate(-50%, -50%) scale(1.1);
+  box-shadow: 0 0 50px rgba(201,162,39,.8);
+}}
+.slider-handle svg {{
+  width: 22px; height: 22px; fill: var(--black);
+}}
+.slider-inner {{ height: 480px; position: relative; }}
+.slider-label {{
+  position: absolute; z-index: 11;
+  font-size: .68rem; font-weight: 700; letter-spacing: .2em; text-transform: uppercase;
+  padding: 6px 14px; background: rgba(6,6,10,.7); backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,.1);
+}}
+.slider-label-before {{ top: 20px; left: 20px; color: var(--gray); }}
+.slider-label-after {{ top: 20px; right: 20px; color: var(--gold); }}
+.slider-drag-hint {{
+  text-align: center; margin-top: 20px;
+  font-size: .72rem; letter-spacing: .15em; text-transform: uppercase;
+  color: var(--gray); animation: hintBounce 2s ease-in-out infinite;
+}}
+@keyframes hintBounce {{
+  0%, 100% {{ transform: translateX(0); }}
+  50% {{ transform: translateX(10px); }}
+}}
+
+/* ================================================
+   PREÇOS — 3D TILT CARDS
+================================================ */
+#precos {{ background: var(--black-2); }}
+.precos-intro {{
+  text-align: center; max-width: 620px; margin: 0 auto 70px;
+}}
+.precos-intro .section-divider {{ margin: 20px auto 24px; }}
+.precos-intro p {{ color: var(--gray); font-size: .95rem; line-height: 1.8; }}
+
+.price-cards {{
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}}
+.price-card {{
+  padding: 44px 36px;
+  background: var(--black-3);
+  border: 1px solid rgba(255,255,255,.05);
+  border-radius: 2px; position: relative; overflow: hidden;
+  transition: border-color .4s, box-shadow .4s;
+  transform-style: preserve-3d;
+  transform: perspective(1000px) rotateX(0deg) rotateY(0deg);
+  will-change: transform;
+}}
+.price-card:hover {{
+  border-color: rgba(201,162,39,.3);
+  box-shadow: 0 30px 80px rgba(0,0,0,.5), 0 0 0 1px rgba(201,162,39,.1);
+}}
+.price-card.featured {{
+  background: linear-gradient(160deg, #130f02, #1c1603);
+  border-color: rgba(201,162,39,.4);
+  box-shadow: 0 20px 60px rgba(0,0,0,.4), 0 0 0 1px rgba(201,162,39,.2);
+}}
+.price-card.featured::before {{
+  content: 'MAIS POPULAR';
+  position: absolute; top: 20px; right: 20px;
+  font-size: .6rem; font-weight: 700; letter-spacing: .2em;
+  background: var(--gold); color: var(--black);
+  padding: 5px 12px;
+}}
+.price-card-glow {{
+  position: absolute; top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(circle at center, rgba(201,162,39,.06), transparent 70%);
+  opacity: 0; transition: opacity .4s; pointer-events: none;
+}}
+.price-card:hover .price-card-glow {{ opacity: 1; }}
+
+.price-card-tier {{
+  font-size: .68rem; font-weight: 700; letter-spacing: .24em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 24px;
+}}
+.price-card-name {{
+  font-family: var(--font-display); font-size: 1.6rem; font-weight: 700;
+  margin-bottom: 8px;
+}}
+.price-card-desc {{
+  font-size: .88rem; color: var(--gray); line-height: 1.6; margin-bottom: 32px;
+}}
+.price-card-amount {{
+  display: flex; align-items: baseline; gap: 4px; margin-bottom: 32px;
+  padding-bottom: 28px; border-bottom: 1px solid rgba(255,255,255,.06);
+}}
+.price-currency {{
+  font-family: var(--font-display); font-size: 1.2rem; color: var(--gray);
+}}
+.price-value {{
+  font-family: var(--font-display); font-size: 3.2rem; font-weight: 900; color: var(--gold);
+  line-height: 1;
+}}
+.price-period {{ font-size: .78rem; color: var(--gray); }}
+.price-includes {{ list-style: none; margin-bottom: 36px; }}
+.price-includes li {{
+  font-size: .88rem; color: var(--gray-2);
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,.04);
+}}
+.price-includes li::before {{
+  content: ''; width: 5px; height: 5px; background: var(--gold);
+  border-radius: 50%; flex-shrink: 0;
+}}
+.price-card-cta {{
+  display: block; text-align: center;
+  padding: 15px; font-size: .8rem; font-weight: 700; letter-spacing: .18em;
+  text-transform: uppercase; border-radius: 1px;
+  transition: all .3s;
+}}
+.price-card-cta.outline {{
+  border: 1px solid rgba(201,162,39,.4); color: var(--gold);
+}}
+.price-card-cta.outline:hover {{
+  background: rgba(201,162,39,.1);
+}}
+.price-card-cta.filled {{
+  background: var(--gold); color: var(--black);
+  box-shadow: 0 8px 32px rgba(201,162,39,.3);
+}}
+.price-card-cta.filled:hover {{
+  background: var(--gold-2);
+  box-shadow: 0 16px 50px rgba(201,162,39,.5);
+  transform: translateY(-2px);
+}}
+
+/* Full table toggle */
+.table-toggle {{
+  text-align: center; margin-top: 50px;
+}}
+.toggle-btn {{
+  background: none; border: 1px solid rgba(255,255,255,.12);
+  color: var(--gray-2); padding: 14px 32px; font-family: var(--font-body);
+  font-size: .8rem; font-weight: 600; letter-spacing: .15em;
+  text-transform: uppercase; border-radius: 1px;
+  transition: border-color .3s, color .3s; cursor: none;
+}}
+.toggle-btn:hover {{ border-color: var(--gold); color: var(--gold); }}
+.price-full-table {{
+  margin-top: 40px; overflow: hidden;
+  max-height: 0; transition: max-height .8s var(--ease);
+  overflow-x: auto;
+}}
+.price-full-table.open {{ max-height: 2000px; }}
+.price-table {{
+  width: 100%; border-collapse: collapse; min-width: 600px;
+}}
+.price-table thead th {{
+  background: var(--gold); color: var(--black);
+  padding: 16px 20px; font-size: .75rem; font-weight: 700;
+  letter-spacing: .15em; text-transform: uppercase; text-align: left;
+}}
+.price-table thead th:last-child {{ text-align: right; }}
+.price-table tbody tr {{
+  border-bottom: 1px solid rgba(255,255,255,.04);
+  transition: background .2s;
+}}
+.price-table tbody tr:hover {{ background: rgba(201,162,39,.04); }}
+.price-table tbody td {{
+  padding: 14px 20px; font-size: .88rem; color: var(--gray-2);
+}}
+.price-table tbody td:first-child {{
+  font-weight: 600; color: var(--white);
+}}
+.price-table tbody td:last-child {{
+  text-align: right; font-family: var(--font-display);
+  font-weight: 700; color: var(--gold); font-size: .95rem;
+}}
+.price-cat-row td {{
+  padding: 12px 20px!important;
+  background: rgba(201,162,39,.07)!important;
+  font-size: .68rem!important; font-weight: 700!important;
+  letter-spacing: .2em!important; text-transform: uppercase!important;
+  color: var(--gold)!important;
+}}
+
+/* ================================================
+   SOBRE — SPLIT + FLOATING ELEMENTS
+================================================ */
+#sobre {{ background: var(--black); }}
+.sobre-grid {{
+  display: grid; grid-template-columns: 1fr 1.2fr; gap: 100px; align-items: center;
+}}
+.sobre-img-stack {{ position: relative; }}
+.sobre-img-main {{
+  width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 2px;
+  box-shadow: 30px 30px 80px rgba(0,0,0,.7);
+}}
+.sobre-img-accent {{
+  position: absolute; bottom: -40px; right: -40px;
+  width: 55%; aspect-ratio: 1; object-fit: cover;
+  border-radius: 2px; border: 4px solid var(--black);
+  box-shadow: 0 20px 60px rgba(0,0,0,.6);
+}}
+.sobre-floating-badge {{
+  position: absolute; top: 32px; right: -24px;
+  background: var(--gold); color: var(--black);
+  padding: 20px 24px; border-radius: 1px;
+  text-align: center; box-shadow: 0 16px 48px rgba(201,162,39,.4);
+  animation: badgeFloat 4s ease-in-out infinite;
+}}
+@keyframes badgeFloat {{
+  0%, 100% {{ transform: translateY(0); }}
+  50% {{ transform: translateY(-8px); }}
+}}
+.badge-num {{
+  font-family: var(--font-hero); font-size: 2.6rem; line-height: 1;
+}}
+.badge-text {{
+  font-size: .65rem; font-weight: 700; letter-spacing: .15em; text-transform: uppercase;
+  margin-top: 4px; line-height: 1.3;
+}}
+.sobre-content p {{
+  color: var(--gray); font-size: .97rem; line-height: 1.9; margin-bottom: 20px;
+}}
+.sobre-features {{
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 40px;
+}}
+.feature-block {{
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 18px 16px;
+  background: rgba(201,162,39,.04);
+  border: 1px solid rgba(201,162,39,.1); border-radius: 1px;
+  transition: border-color .3s, background .3s;
+}}
+.feature-block:hover {{
+  border-color: rgba(201,162,39,.3); background: rgba(201,162,39,.08);
+}}
+.feature-icon {{
+  width: 36px; height: 36px; flex-shrink: 0;
+  background: rgba(201,162,39,.12); border-radius: 1px;
+  display: flex; align-items: center; justify-content: center;
+}}
+.feature-icon svg {{ width: 18px; height: 18px; stroke: var(--gold); fill: none; stroke-width: 1.5; }}
+.feature-text {{
+  font-size: .84rem; color: var(--gray-2); line-height: 1.5; font-weight: 500;
+}}
+
+/* ================================================
+   DIFERENCIAIS — LARGE NUMBERED ITEMS
+================================================ */
+#diferenciais {{ background: var(--black-2); }}
+.dif-header-row {{
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px; margin-bottom: 80px; align-items: end;
+}}
+.dif-lead {{
+  font-size: 1rem; color: var(--gray); line-height: 1.85;
+}}
+.dif-list {{ display: flex; flex-direction: column; gap: 0; }}
+.dif-item {{
+  display: grid; grid-template-columns: 100px 1fr; gap: 40px;
+  padding: 44px 0; border-bottom: 1px solid rgba(255,255,255,.05);
+  align-items: start; transition: background .3s;
+  position: relative;
+}}
+.dif-item::before {{
+  content: ''; position: absolute; left: -6%;
+  top: 0; bottom: 0; width: 4px;
+  background: var(--gold);
+  transform: scaleY(0); transform-origin: top;
+  transition: transform .5s var(--ease);
+}}
+.dif-item:hover::before {{ transform: scaleY(1); }}
+.dif-number-big {{
+  font-family: var(--font-hero); font-size: 5rem; line-height: 1;
+  background: linear-gradient(180deg, rgba(201,162,39,.5), rgba(201,162,39,.1));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}}
+.dif-right-title {{
+  font-family: var(--font-display); font-size: 1.5rem; font-weight: 700;
+  margin-bottom: 14px;
+}}
+.dif-right-desc {{
+  font-size: .9rem; color: var(--gray); line-height: 1.8;
+}}
+.dif-right-tags {{ display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }}
+.dif-tag {{
+  font-size: .65rem; font-weight: 700; letter-spacing: .15em;
+  text-transform: uppercase; padding: 5px 12px;
+  border: 1px solid rgba(201,162,39,.25); color: var(--gold-3);
+  border-radius: 1px;
+}}
+
+/* ================================================
+   GALERIA HORIZONTAL — DRAGGABLE
+================================================ */
+#galeria {{ background: var(--black); overflow: hidden; padding-bottom: 0; }}
+.gallery-track-wrap {{
+  overflow: hidden; margin-top: 60px; cursor: grab;
+}}
+.gallery-track-wrap:active {{ cursor: grabbing; }}
+.gallery-track {{
+  display: flex; gap: 16px;
+  width: max-content; padding-bottom: 0;
+  transition: transform .05s linear;
+}}
+.gallery-item {{
+  width: 340px; flex-shrink: 0; position: relative; overflow: hidden;
+  border-radius: 2px; border: 1px solid rgba(255,255,255,.04);
+}}
+.gallery-item img {{
+  width: 100%; height: 240px; object-fit: cover;
+  transition: transform .6s var(--ease), filter .6s;
+  filter: brightness(.8);
+}}
+.gallery-item:hover img {{
+  transform: scale(1.06); filter: brightness(1);
+}}
+.gallery-item-label {{
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 20px 18px 16px;
+  background: linear-gradient(to top, rgba(6,6,10,.9), transparent);
+  font-family: var(--font-display); font-size: .9rem; font-weight: 600;
+  opacity: 0; transform: translateY(8px);
+  transition: opacity .4s, transform .4s;
+}}
+.gallery-item:hover .gallery-item-label {{ opacity: 1; transform: translateY(0); }}
+.gallery-drag-hint {{
+  text-align: center; padding: 30px 0 60px;
+  font-size: .7rem; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--gray); display: flex; align-items: center; justify-content: center; gap: 12px;
+}}
+.drag-hint-line {{ flex: 1; max-width: 80px; height: 1px; background: rgba(255,255,255,.08); }}
+
+/* ================================================
+   DEPOIMENTOS — CAROUSEL
+================================================ */
+#depoimentos {{ background: var(--black-2); }}
+.dep-header {{
+  display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: end; margin-bottom: 60px;
+}}
+.dep-controls {{ display: flex; gap: 12px; }}
+.dep-btn {{
+  width: 48px; height: 48px; border: 1px solid rgba(201,162,39,.3);
+  background: none; display: flex; align-items: center; justify-content: center;
+  border-radius: 1px; transition: background .3s, border-color .3s; cursor: none;
+}}
+.dep-btn:hover {{
+  background: rgba(201,162,39,.12); border-color: var(--gold);
+}}
+.dep-btn svg {{ width: 18px; height: 18px; stroke: var(--gold); fill: none; stroke-width: 1.5; }}
+
+.dep-track-wrap {{ overflow: hidden; }}
+.dep-track {{
+  display: flex; gap: 24px;
+  transition: transform .7s var(--ease);
+}}
+.dep-card {{
+  flex-shrink: 0; width: calc((100% - 48px) / 3);
+  padding: 40px 36px;
+  background: var(--black-3);
+  border: 1px solid rgba(255,255,255,.05); border-radius: 2px;
+  transition: border-color .4s, transform .4s;
+  position: relative; overflow: hidden;
+}}
+.dep-card::before {{
+  content: '\\201C';
+  position: absolute; top: 20px; right: 28px;
+  font-family: var(--font-display); font-size: 6rem; line-height: 1;
+  color: rgba(201,162,39,.07); pointer-events: none;
+}}
+.dep-card:hover {{
+  border-color: rgba(201,162,39,.2); transform: translateY(-4px);
+}}
+.dep-stars {{ display: flex; gap: 4px; margin-bottom: 20px; }}
+.dep-stars span {{ color: var(--gold); font-size: .85rem; }}
+.dep-text {{
+  font-size: .9rem; color: var(--gray-2); line-height: 1.85; margin-bottom: 28px;
+  font-style: italic;
+}}
+.dep-author {{ display: flex; align-items: center; gap: 16px; }}
+.dep-avatar {{
+  width: 44px; height: 44px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold-3), var(--gold));
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-weight: 700; color: var(--black); font-size: 1.1rem;
+  flex-shrink: 0;
+}}
+.dep-name {{
+  font-size: .9rem; font-weight: 600; margin-bottom: 2px;
+}}
+.dep-car {{ font-size: .75rem; color: var(--gray); }}
+.dep-dots {{
+  display: flex; gap: 8px; justify-content: center; margin-top: 40px;
+}}
+.dep-dot {{
+  width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,.2);
+  transition: background .3s, transform .3s; cursor: none;
+}}
+.dep-dot.active {{ background: var(--gold); transform: scale(1.4); }}
+
+/* ================================================
+   CTA SECTION — BOLD
+================================================ */
+#cta {{
+  position: relative; overflow: hidden;
+  background: var(--black-3); padding: 140px 0;
+  text-align: center;
+}}
+.cta-grid-bg {{
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(201,162,39,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,162,39,.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse at center, black, transparent 70%);
+}}
+.cta-glow {{
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  width: 600px; height: 600px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(201,162,39,.1), transparent 70%);
+  pointer-events: none;
+}}
+.cta-content {{ position: relative; z-index: 2; }}
+.cta-label {{
+  font-size: .68rem; font-weight: 700; letter-spacing: .3em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 20px; display: block;
+}}
+.cta-title {{
+  font-family: var(--font-hero); font-size: clamp(3rem, 7vw, 7rem);
+  line-height: .9; letter-spacing: .03em; margin-bottom: 24px;
+}}
+.cta-title .line-gold {{
+  display: block;
+  background: linear-gradient(90deg, var(--gold-3), var(--gold-2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}}
+.cta-sub {{
+  font-size: 1.05rem; color: var(--gray); max-width: 480px;
+  margin: 0 auto 52px; line-height: 1.8;
+}}
+.cta-btns {{ display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }}
+
+.btn-whatsapp-large {{
+  display: inline-flex; align-items: center; gap: 14px;
+  background: #25D366; color: var(--white);
+  padding: 20px 48px; font-size: .88rem; font-weight: 700;
+  letter-spacing: .16em; text-transform: uppercase; border-radius: 1px;
+  box-shadow: 0 12px 48px rgba(37,211,102,.35);
+  transition: background .3s, transform .3s var(--ease), box-shadow .3s;
+  position: relative; overflow: hidden;
+}}
+.btn-whatsapp-large::before {{
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,.15), transparent 70%);
+  transform: translateX(-100%); transition: transform .6s var(--ease);
+}}
+.btn-whatsapp-large:hover::before {{ transform: translateX(100%); }}
+.btn-whatsapp-large:hover {{
+  background: #20ba58; transform: translateY(-4px);
+  box-shadow: 0 24px 72px rgba(37,211,102,.5);
+}}
+.btn-whatsapp-large svg {{ width: 24px; height: 24px; fill: currentColor; flex-shrink: 0; }}
+
+/* ================================================
+   CONTATO
+================================================ */
+#contato {{ background: var(--black); }}
+.contato-grid {{
+  display: grid; grid-template-columns: 1fr 1.3fr; gap: 80px; align-items: start;
+}}
+.contato-info p {{ color: var(--gray); font-size: .97rem; line-height: 1.85; margin-bottom: 40px; }}
+.contato-items {{ display: flex; flex-direction: column; gap: 16px; }}
+.contato-item {{
+  display: flex; align-items: flex-start; gap: 18px;
+  padding: 22px 24px;
+  background: rgba(255,255,255,.02);
+  border: 1px solid rgba(255,255,255,.05); border-radius: 1px;
+  transition: border-color .3s, background .3s;
+}}
+.contato-item:hover {{
+  border-color: rgba(201,162,39,.2); background: rgba(201,162,39,.03);
+}}
+.c-icon {{
+  width: 40px; height: 40px; background: rgba(201,162,39,.1);
+  border-radius: 1px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}}
+.c-icon svg {{ width: 18px; height: 18px; stroke: var(--gold); fill: none; stroke-width: 1.5; }}
+.c-label {{
+  font-size: .66rem; font-weight: 600; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--gray); margin-bottom: 5px;
+}}
+.c-val {{
+  font-size: .94rem; color: var(--white); font-weight: 500; line-height: 1.5;
+}}
+
+.horario-card {{
+  background: var(--black-3); border: 1px solid rgba(201,162,39,.15);
+  padding: 44px; border-radius: 2px;
+}}
+.horario-card h3 {{
+  font-family: var(--font-display); font-size: 1.5rem; margin-bottom: 32px; color: var(--gold);
+}}
+.h-row {{
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,.05);
+}}
+.h-row:last-of-type {{ border: none; margin-bottom: 0; }}
+.h-day {{ font-size: .9rem; color: var(--gray-2); }}
+.h-time {{ font-size: .9rem; font-weight: 600; color: var(--white); }}
+.h-closed {{ color: rgba(255,90,90,.75)!important; }}
+
+.horario-map {{ margin-top: 28px; border-radius: 2px; overflow: hidden; border: 1px solid rgba(201,162,39,.12); }}
+.horario-map iframe {{ width: 100%; height: 240px; display: block; filter: grayscale(80%) contrast(1.1) brightness(.85); }}
+
+/* ================================================
+   FLOATING WA
+================================================ */
+#float-wa {{
+  position: fixed; bottom: 32px; right: 32px; z-index: 890;
+}}
+.float-wa-btn {{
+  width: 60px; height: 60px; border-radius: 50%; background: #25D366;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 32px rgba(37,211,102,.45);
+  animation: waPulse 3s ease-in-out infinite;
+  transition: transform .3s var(--ease), box-shadow .3s;
+  position: relative;
+}}
+.float-wa-btn svg {{ width: 32px; height: 32px; fill: white; }}
+.float-wa-btn:hover {{ transform: scale(1.12); box-shadow: 0 14px 50px rgba(37,211,102,.65); }}
+@keyframes waPulse {{
+  0%, 100% {{ box-shadow: 0 8px 32px rgba(37,211,102,.45); }}
+  50% {{ box-shadow: 0 8px 32px rgba(37,211,102,.45), 0 0 0 12px rgba(37,211,102,.1); }}
+}}
+.float-tooltip {{
+  position: absolute; right: 72px; top: 50%; transform: translateY(-50%);
+  background: rgba(6,6,10,.95); backdrop-filter: blur(16px);
+  border: 1px solid rgba(201,162,39,.2); padding: 8px 16px;
+  white-space: nowrap; font-size: .75rem; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--white);
+  opacity: 0; pointer-events: none;
+  transition: opacity .3s; border-radius: 1px;
+}}
+#float-wa:hover .float-tooltip {{ opacity: 1; }}
+
+/* ================================================
+   FOOTER
+================================================ */
+footer {{
+  background: var(--black);
+  border-top: 1px solid rgba(201,162,39,.1);
+  padding: 56px 6%;
+}}
+.footer-inner {{
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 32px;
+}}
+.footer-brand {{ display: flex; align-items: center; gap: 14px; }}
+.footer-brand img {{
+  width: 42px; height: 42px; object-fit: contain; border-radius: 50%;
+  opacity: .8;
+}}
+.footer-brand-text {{ font-family: var(--font-hero); font-size: 1.2rem; letter-spacing: .08em; }}
+.footer-copy {{ font-size: .78rem; color: rgba(136,136,160,.6); letter-spacing: .06em; text-align: center; }}
+.footer-social {{ display: flex; gap: 12px; }}
+.social-link {{
+  width: 38px; height: 38px; border: 1px solid rgba(255,255,255,.08);
+  border-radius: 1px; display: flex; align-items: center; justify-content: center;
+  transition: border-color .3s, background .3s;
+}}
+.social-link:hover {{ border-color: var(--gold); background: rgba(201,162,39,.1); }}
+.social-link svg {{ width: 16px; height: 16px; fill: var(--gray-2); }}
+
+/* ================================================
+   RESPONSIVE
+================================================ */
+@media(max-width:1100px) {{
+  .cards-3d-grid {{ grid-template-columns: repeat(2,1fr); }}
+  .price-cards {{ grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; }}
+  .dif-header-row {{ grid-template-columns: 1fr; gap: 30px; }}
+  .dep-card {{ width: calc((100% - 24px) / 2); }}
+}}
+@media(max-width:900px) {{
+  .sobre-grid {{ grid-template-columns: 1fr; gap: 60px; }}
+  .sobre-img-accent {{ display: none; }}
+  .sobre-floating-badge {{ right: 0; }}
+  .services-header {{ grid-template-columns: 1fr; }}
+  nav.nav-links, .nav-cta {{ display: none; }}
+  .hamburger {{ display: flex; }}
+  .dep-card {{ width: 100%; }}
+  .contato-grid {{ grid-template-columns: 1fr; gap: 40px; }}
+}}
+@media(max-width:640px) {{
+  .hero-h1 {{ font-size: clamp(3rem,12vw,5rem); }}
+  .cards-3d-grid {{ grid-template-columns: 1fr; }}
+  .hero-stats {{ flex-direction: column; gap: 0; }}
+  .stat-block {{ border-right: none; border-bottom: 1px solid rgba(201,162,39,.08); }}
+  .sobre-features {{ grid-template-columns: 1fr; }}
+  .slider-inner {{ height: 260px; }}
+  .dif-item {{ grid-template-columns: 1fr; gap: 10px; }}
+  .dif-number-big {{ font-size: 3rem; }}
+  footer {{ padding: 40px 5%; }}
+  .footer-inner {{ flex-direction: column; align-items: center; text-align: center; }}
+  #float-wa {{ bottom: 20px; right: 20px; }}
+  .float-wa-btn {{ width: 52px; height: 52px; }}
+}}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-logo">ESTÉTICA <span>CJ</span></div>
+  <div class="loader-bar"></div>
+</div>
+
+<!-- CURSOR -->
+<div id="cursor">
+  <div class="cursor-dot"></div>
+  <div class="cursor-ring"></div>
+</div>
+
+<!-- PROGRESS BAR -->
+<div id="progress-bar"><div id="progress-fill"></div></div>
+
+<!-- FLOATING WHATSAPP -->
+<a id="float-wa" href="https://wa.me/5518991374140?text=Olá!%20Quero%20agendar%20um%20serviço%20na%20Estética%20CJ." target="_blank" rel="noopener" aria-label="WhatsApp">
+  <div class="float-tooltip">Fale Conosco</div>
+  <div class="float-wa-btn">
+    <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  </div>
+</a>
+
+<!-- NAVIGATION -->
+<header id="nav">
+  <a href="#hero" class="nav-brand">
+    <img src="data:image/jpeg;base64,{imgs["logo"]}" alt="Logo CJ" class="nav-brand-img" loading="lazy">
+    <div class="nav-brand-text">
+      <span class="nav-brand-sub">Estética Automotiva</span>
+      <span class="nav-brand-name">CJ</span>
+    </div>
+  </a>
+  <nav class="nav-links" aria-label="Menu principal">
+    <ul>
+      <li><a href="#servicos">Serviços</a></li>
+      <li><a href="#resultados">Resultados</a></li>
+      <li><a href="#precos">Preços</a></li>
+      <li><a href="#sobre">Sobre</a></li>
+      <li><a href="#depoimentos">Avaliações</a></li>
+    </ul>
+  </nav>
+  <a href="https://wa.me/5518991374140?text=Quero%20agendar!" class="nav-cta btn-magnetic" target="_blank" rel="noopener">Agendar</a>
+  <button class="hamburger" id="hamburger" aria-label="Abrir menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- MOBILE MENU -->
+<div id="mobile-nav" role="dialog" aria-label="Menu de navegação" aria-modal="true">
+  <a href="#servicos" class="mob-link">Serviços</a>
+  <a href="#resultados" class="mob-link">Resultados</a>
+  <a href="#precos" class="mob-link">Preços</a>
+  <a href="#sobre" class="mob-link">Sobre</a>
+  <a href="#depoimentos" class="mob-link">Avaliações</a>
+  <a href="https://wa.me/5518991374140" target="_blank" rel="noopener" style="color:var(--gold)">WhatsApp</a>
+</div>
+
+<!-- ===== HERO ===== -->
+<section id="hero" aria-label="Início">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-bg" id="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-grain" aria-hidden="true"></div>
+  <div class="hero-lines" aria-hidden="true">
+    <div class="hero-line" style="top:20%;width:60%;"></div>
+    <div class="hero-line" style="top:45%;width:40%;"></div>
+    <div class="hero-line" style="top:70%;width:50%;"></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-tag">
+      <span class="hero-tag-line"></span>
+      <span class="hero-tag-text">Estética Premium · Araçatuba / SP</span>
+    </div>
+    <h1 class="hero-h1">
+      <span class="line-1">SEU CARRO</span>
+      <span class="line-2">COM PADRÃO</span>
+      <span class="line-3">DE VITRINE</span>
+    </h1>
+    <p class="hero-desc">Polimento técnico, vitrificação cerâmica e higienização profissional. Para quem não aceita nada menos que perfeição absoluta.</p>
+    <div class="hero-btns">
+      <a href="https://wa.me/5518991374140?text=Olá!%20Quero%20agendar%20um%20serviço." class="btn-gold btn-magnetic" target="_blank" rel="noopener">
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Agendar no WhatsApp
+      </a>
+      <a href="#servicos" class="btn-outline btn-magnetic">Ver Serviços</a>
+    </div>
+  </div>
+  <div class="hero-stats" role="complementary" aria-label="Estatísticas">
+    <div class="stat-block">
+      <div class="stat-num counter" data-target="500">0</div>
+      <div class="stat-label">Carros Atendidos</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-num">5 ★</div>
+      <div class="stat-label">Avaliação Média</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-num counter" data-target="100">0</div>
+      <div class="stat-label">% Satisfação</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-num counter" data-target="5">0</div>
+      <div class="stat-label">Anos de Experiência</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SERVIÇOS ===== -->
+<section id="servicos" class="section">
+  <div class="container">
+    <div class="services-header">
+      <div class="reveal-left">
+        <div class="section-eyebrow">
+          <span class="eyebrow-line"></span>
+          <span class="eyebrow-text">O que fazemos</span>
+        </div>
+        <h2 class="section-title">Serviços que <span class="accent">transformam</span><br>o seu veículo</h2>
+        <div class="section-divider"></div>
+      </div>
+      <p class="services-header-desc reveal-right">
+        Cada serviço é executado com produtos de marcas líderes mundiais e técnicos altamente especializados. Passe o mouse nos cards para ver os detalhes completos.
+      </p>
+    </div>
+    <div class="cards-3d-grid">
+      <div class="card-3d-wrap reveal-up" style="transition-delay:.05s">
+        <div class="card-3d">
+          <div class="card-face card-front">
+            <img src="data:image/jpeg;base64,{imgs["hero"]}" alt="Lavagem Premium" class="card-front-img" loading="lazy">
+            <div class="card-front-body">
+              <div class="card-front-num">01 — Lavagem</div>
+              <h3 class="card-front-title">Lavagem Premium</h3>
+              <div class="card-front-price">
+                <span class="price-from-label">A partir de</span>
+                <span class="price-amount">R$ 80</span>
+              </div>
+              <div class="card-flip-hint">
+                <svg viewBox="0 0 24 24" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                Passe o mouse
+              </div>
+            </div>
+          </div>
+          <div class="card-face card-back">
+            <div>
+              <div class="card-back-tag">Lavagem</div>
+              <div class="card-back-title">Lavagem Premium Detalhada</div>
+              <ul class="card-back-list">
+                <li>Lavagem manual com shampoo neutro</li>
+                <li>Limpeza de rodas e pneus</li>
+                <li>Remoção de insetos e resinas</li>
+                <li>Secagem com microfibra premium</li>
+                <li>Finalização com cera líquida</li>
+              </ul>
+            </div>
+            <div>
+              <div class="card-back-price">R$ 80 – 200</div>
+              <div class="card-back-note">Varia conforme porte do veículo</div>
+              <a href="https://wa.me/5518991374140?text=Quero%20lavagem%20premium!" class="card-back-cta" target="_blank" rel="noopener">Agendar →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-3d-wrap reveal-up" style="transition-delay:.1s">
+        <div class="card-3d">
+          <div class="card-face card-front">
+            <img src="data:image/jpeg;base64,{imgs["polimento"]}" alt="Polimento Técnico" class="card-front-img" loading="lazy">
+            <div class="card-front-body">
+              <div class="card-front-num">02 — Polimento</div>
+              <h3 class="card-front-title">Polimento Técnico</h3>
+              <div class="card-front-price">
+                <span class="price-from-label">A partir de</span>
+                <span class="price-amount">R$ 350</span>
+              </div>
+              <div class="card-flip-hint">
+                <svg viewBox="0 0 24 24" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                Passe o mouse
+              </div>
+            </div>
+          </div>
+          <div class="card-face card-back">
+            <div>
+              <div class="card-back-tag">Polimento</div>
+              <div class="card-back-title">Polimento em 1, 2 ou 3 Etapas</div>
+              <ul class="card-back-list">
+                <li>Remoção de riscos e hologramas</li>
+                <li>Eliminação de oxidação profunda</li>
+                <li>Máquinas orbitais profissionais</li>
+                <li>Compostos e abrasivos premium</li>
+                <li>Pintura restaurada ao máximo</li>
+              </ul>
+            </div>
+            <div>
+              <div class="card-back-price">R$ 350 – 1.400</div>
+              <div class="card-back-note">Conforme nível de correção</div>
+              <a href="https://wa.me/5518991374140?text=Quero%20polimento!" class="card-back-cta" target="_blank" rel="noopener">Agendar →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-3d-wrap reveal-up" style="transition-delay:.15s">
+        <div class="card-3d">
+          <div class="card-face card-front">
+            <img src="data:image/jpeg;base64,{imgs["higienizacao"]}" alt="Higienização Interna" class="card-front-img" loading="lazy">
+            <div class="card-front-body">
+              <div class="card-front-num">03 — Higienização</div>
+              <h3 class="card-front-title">Higienização Interna</h3>
+              <div class="card-front-price">
+                <span class="price-from-label">A partir de</span>
+                <span class="price-amount">R$ 280</span>
+              </div>
+              <div class="card-flip-hint">
+                <svg viewBox="0 0 24 24" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                Passe o mouse
+              </div>
+            </div>
+          </div>
+          <div class="card-face card-back">
+            <div>
+              <div class="card-back-tag">Higienização</div>
+              <div class="card-back-title">Limpeza Interna Profunda</div>
+              <ul class="card-back-list">
+                <li>Higienização a vapor 120°C</li>
+                <li>Eliminação de bactérias e ácaros</li>
+                <li>Bancos, teto e tapetes</li>
+                <li>Injeção e extração profissional</li>
+                <li>Aromatização especial</li>
+              </ul>
+            </div>
+            <div>
+              <div class="card-back-price">R$ 280 – 550</div>
+              <div class="card-back-note">Varia por porte do veículo</div>
+              <a href="https://wa.me/5518991374140?text=Quero%20higienizacao!" class="card-back-cta" target="_blank" rel="noopener">Agendar →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-3d-wrap reveal-up" style="transition-delay:.2s">
+        <div class="card-3d">
+          <div class="card-face card-front">
+            <img src="data:image/jpeg;base64,{imgs["gear"]}" alt="Vitrificação Cerâmica" class="card-front-img" loading="lazy">
+            <div class="card-front-body">
+              <div class="card-front-num">04 — Vitrificação</div>
+              <h3 class="card-front-title">Vitrificação Cerâmica</h3>
+              <div class="card-front-price">
+                <span class="price-from-label">A partir de</span>
+                <span class="price-amount">R$ 800</span>
+              </div>
+              <div class="card-flip-hint">
+                <svg viewBox="0 0 24 24" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                Passe o mouse
+              </div>
+            </div>
+          </div>
+          <div class="card-face card-back">
+            <div>
+              <div class="card-back-tag">Proteção</div>
+              <div class="card-back-title">Vitrificação Cerâmica Premium</div>
+              <ul class="card-back-list">
+                <li>Nanocerámica de última geração</li>
+                <li>Durabilidade de até 3 anos</li>
+                <li>Efeito hydrophobic total</li>
+                <li>Proteção UV e química</li>
+                <li>Polimento incluído no pacote</li>
+              </ul>
+            </div>
+            <div>
+              <div class="card-back-price">R$ 800 – 2.000</div>
+              <div class="card-back-note">Com polimento incluso</div>
+              <a href="https://wa.me/5518991374140?text=Quero%20vitrificacao!" class="card-back-cta" target="_blank" rel="noopener">Agendar →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== BEFORE/AFTER ===== -->
+<section id="resultados" class="section">
+  <div class="container">
+    <div style="text-align:center" class="reveal-up">
+      <div class="section-eyebrow" style="justify-content:center">
+        <span class="eyebrow-line"></span>
+        <span class="eyebrow-text">Antes & Depois</span>
+        <span class="eyebrow-line"></span>
+      </div>
+      <h2 class="section-title">Resultados que <span class="accent">falam</span> por si</h2>
+      <div class="section-divider" style="margin:24px auto"></div>
+      <p style="color:var(--gray);font-size:.97rem;max-width:500px;margin:0 auto">Arraste o divisor e veja a diferença. Isso é o que entregamos em cada veículo.</p>
+    </div>
+    <div class="slider-container reveal-scale" style="transition-delay:.2s">
+      <div class="slider-inner" id="slider-inner">
+        <div class="slider-before" id="slider-before"></div>
+        <div class="slider-after" id="slider-after"></div>
+        <div class="slider-divider" id="slider-div"></div>
+        <div class="slider-handle" id="slider-handle">
+          <svg viewBox="0 0 24 24"><path d="M8 4l-4 4 4 4M16 4l4 4-4 4M3 12h18"/></svg>
+        </div>
+        <div class="slider-label slider-label-before">Antes</div>
+        <div class="slider-label slider-label-after">Depois</div>
+      </div>
+    </div>
+    <div class="slider-drag-hint">← Arraste para comparar →</div>
+  </div>
+</section>
+
+<!-- ===== PREÇOS ===== -->
+<section id="precos" class="section">
+  <div class="container">
+    <div class="precos-intro reveal-up">
+      <div class="section-eyebrow" style="justify-content:center">
+        <span class="eyebrow-line"></span>
+        <span class="eyebrow-text">Investimento</span>
+        <span class="eyebrow-line"></span>
+      </div>
+      <h2 class="section-title">Transparência <span class="accent">total</span></h2>
+      <div class="section-divider"></div>
+      <p>Preços claros e justos. Sem surpresas. Consulte pelo WhatsApp para condições especiais e pacotes personalizados.</p>
+    </div>
+    <div class="price-cards">
+      <div class="price-card reveal-up" style="transition-delay:.05s" data-tilt>
+        <div class="price-card-glow"></div>
+        <div class="price-card-tier">Essencial</div>
+        <div class="price-card-name">Pacote Básico</div>
+        <div class="price-card-desc">Ideal para manutenção mensal e cuidado regular do seu veículo.</div>
+        <div class="price-card-amount">
+          <span class="price-currency">R$</span>
+          <span class="price-value">200</span>
+          <span class="price-period">em diante</span>
+        </div>
+        <ul class="price-includes">
+          <li>Lavagem premium externa</li>
+          <li>Aspiração completa</li>
+          <li>Limpeza do painel</li>
+          <li>Secagem com microfibra</li>
+          <li>Cera líquida de proteção</li>
+        </ul>
+        <a href="https://wa.me/5518991374140?text=Quero%20o%20Pacote%20Basico!" class="price-card-cta outline" target="_blank" rel="noopener">Contratar</a>
+      </div>
+
+      <div class="price-card featured reveal-up" style="transition-delay:.1s" data-tilt>
+        <div class="price-card-glow"></div>
+        <div class="price-card-tier">Recomendado</div>
+        <div class="price-card-name">Pacote Intermediário</div>
+        <div class="price-card-desc">O melhor custo-benefício. Polimento + higienização completa.</div>
+        <div class="price-card-amount">
+          <span class="price-currency">R$</span>
+          <span class="price-value">580</span>
+          <span class="price-period">em diante</span>
+        </div>
+        <ul class="price-includes">
+          <li>Polimento 1 etapa (máquina)</li>
+          <li>Higienização a vapor</li>
+          <li>Bancos e tapetes detalhados</li>
+          <li>Cristalização da pintura</li>
+          <li>Aromatização especial</li>
+          <li>Garantia de resultado</li>
+        </ul>
+        <a href="https://wa.me/5518991374140?text=Quero%20o%20Pacote%20Intermediario!" class="price-card-cta filled" target="_blank" rel="noopener">Contratar</a>
+      </div>
+
+      <div class="price-card reveal-up" style="transition-delay:.15s" data-tilt>
+        <div class="price-card-glow"></div>
+        <div class="price-card-tier">Premium</div>
+        <div class="price-card-name">Pacote Full Detail</div>
+        <div class="price-card-desc">Experiência completa de estética. O máximo do mercado.</div>
+        <div class="price-card-amount">
+          <span class="price-currency">R$</span>
+          <span class="price-value">1500</span>
+          <span class="price-period">em diante</span>
+        </div>
+        <ul class="price-includes">
+          <li>Polimento 3 etapas (correção total)</li>
+          <li>Vitrificação cerâmica premium</li>
+          <li>Higienização interna completa</li>
+          <li>Limpeza de motor</li>
+          <li>Detalhamento de rodas</li>
+          <li>1 ano de garantia no serviço</li>
+        </ul>
+        <a href="https://wa.me/5518991374140?text=Quero%20o%20Pacote%20Full%20Detail!" class="price-card-cta outline" target="_blank" rel="noopener">Contratar</a>
+      </div>
+    </div>
+
+    <div class="table-toggle reveal-up">
+      <button class="toggle-btn" id="toggle-table" aria-expanded="false">
+        Ver tabela completa de preços ↓
+      </button>
+    </div>
+    <div class="price-full-table" id="full-table">
+      <table class="price-table" aria-label="Tabela completa de preços">
+        <thead>
+          <tr><th>Serviço</th><th>Descrição</th><th>Preço</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="price-cat-row" colspan="3">🚿 Lavagem</td></tr>
+          <tr><td>Lavagem Simples</td><td>Externa + rodas + vidros</td><td>R$ 50 – 80</td></tr>
+          <tr><td>Lavagem Premium</td><td>Externa + aspiração + painel</td><td>R$ 80 – 130</td></tr>
+          <tr><td>Lavagem Completa</td><td>Tudo + cera de proteção</td><td>R$ 130 – 200</td></tr>
+          <tr><td class="price-cat-row" colspan="3">✨ Polimento</td></tr>
+          <tr><td>Polimento 1 Etapa</td><td>Remoção leve de oxidação</td><td>R$ 350 – 500</td></tr>
+          <tr><td>Polimento 2 Etapas</td><td>Correção + refino</td><td>R$ 550 – 800</td></tr>
+          <tr><td>Polimento 3 Etapas</td><td>Correção total de riscos</td><td>R$ 900 – 1.400</td></tr>
+          <tr><td class="price-cat-row" colspan="3">🧹 Higienização</td></tr>
+          <tr><td>Higienização Básica</td><td>Aspiração + painel + bancos</td><td>R$ 150 – 250</td></tr>
+          <tr><td>Higienização a Vapor</td><td>Completa com vapor 120°C</td><td>R$ 280 – 450</td></tr>
+          <tr><td>Injeção / Extração</td><td>Bancos e tapetes em profundidade</td><td>R$ 350 – 550</td></tr>
+          <tr><td class="price-cat-row" colspan="3">💎 Proteção</td></tr>
+          <tr><td>Cristalização</td><td>SiO2 — até 6 meses</td><td>R$ 400 – 600</td></tr>
+          <tr><td>Vitrificação Cerâmica</td><td>Nanocerámica — até 3 anos</td><td>R$ 800 – 1.600</td></tr>
+          <tr><td>Espelhamento Total</td><td>Polimento 3 etapas + vitrificação</td><td>R$ 1.200 – 2.000</td></tr>
+          <tr><td class="price-cat-row" colspan="3">🎁 Pacotes</td></tr>
+          <tr><td>Pacote Básico</td><td>Lavagem premium + higienização</td><td>R$ 200 – 320</td></tr>
+          <tr><td>Pacote Intermediário</td><td>Polimento 1 etapa + vapor</td><td>R$ 580 – 850</td></tr>
+          <tr><td>Pacote Premium</td><td>Polimento 3 etapas + vitrificação</td><td>R$ 1.500 – 2.600</td></tr>
+        </tbody>
+      </table>
+      <p style="text-align:center;color:var(--gray);font-size:.78rem;margin-top:16px;letter-spacing:.08em">
+        ⚠ Preços variam conforme porte do veículo. Consulte via WhatsApp.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SOBRE ===== -->
+<section id="sobre" class="section">
+  <div class="container">
+    <div class="sobre-grid">
+      <div class="sobre-img-stack reveal-left">
+        <img src="data:image/jpeg;base64,{imgs["polimento"]}" alt="Técnico em ação" class="sobre-img-main" loading="lazy">
+        <img src="data:image/jpeg;base64,{imgs["interior1"]}" alt="Interior detalhado" class="sobre-img-accent" loading="lazy">
+        <div class="sobre-floating-badge">
+          <div class="badge-num">5+</div>
+          <div class="badge-text">Anos de<br>Experiência</div>
+        </div>
+      </div>
+      <div class="reveal-right">
+        <div class="section-eyebrow">
+          <span class="eyebrow-line"></span>
+          <span class="eyebrow-text">Sobre nós</span>
+        </div>
+        <h2 class="section-title">Excelência que você <span class="accent">enxerga</span> e sente</h2>
+        <div class="section-divider"></div>
+        <p>A <strong>Estética Automotiva CJ</strong> nasceu da paixão por carros e da busca constante por resultados impecáveis. Somos referência em Araçatuba/SP para clientes que não abrem mão do melhor.</p>
+        <p>Trabalhamos com produtos de marcas reconhecidas globalmente — Meguiar's, Sonax, Vonixx, 3M — e equipamentos de última geração para garantir um acabamento que supera expectativas.</p>
+        <p>Acreditamos que cada veículo merece atenção individual. Por isso, avaliamos cada caso e recomendamos a solução ideal para o seu carro específico.</p>
+        <div class="sobre-features">
+          <div class="feature-block">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </div>
+            <span class="feature-text">Produtos premium de marcas líderes mundiais</span>
+          </div>
+          <div class="feature-block">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            </div>
+            <span class="feature-text">Técnicos certificados e constantemente treinados</span>
+          </div>
+          <div class="feature-block">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <span class="feature-text">Garantia de qualidade em todos os serviços</span>
+          </div>
+          <div class="feature-block">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+            </div>
+            <span class="feature-text">Atendimento personalizado para cada veículo</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== DIFERENCIAIS ===== -->
+<section id="diferenciais" class="section">
+  <div class="container">
+    <div class="dif-header-row">
+      <div class="reveal-left">
+        <div class="section-eyebrow">
+          <span class="eyebrow-line"></span>
+          <span class="eyebrow-text">Diferenciais</span>
+        </div>
+        <h2 class="section-title">Por que somos a <span class="accent">melhor</span> escolha</h2>
+        <div class="section-divider"></div>
+      </div>
+      <p class="dif-lead reveal-right">Não é sorte, é método. Cada detalhe do nosso processo foi construído para entregar resultados consistentes que geram clientes fiéis.</p>
+    </div>
+    <div class="dif-list">
+      <div class="dif-item reveal-up">
+        <div class="dif-number-big">01</div>
+        <div>
+          <div class="dif-right-title">Produtos de Mais Alto Padrão</div>
+          <p class="dif-right-desc">Trabalhamos exclusivamente com marcas reconhecidas internacionalmente. Cada produto é escolhido por sua eficácia comprovada, segurança para a pintura e durabilidade do resultado.</p>
+          <div class="dif-right-tags">
+            <span class="dif-tag">Meguiar's</span>
+            <span class="dif-tag">Sonax</span>
+            <span class="dif-tag">Vonixx</span>
+            <span class="dif-tag">3M</span>
+          </div>
+        </div>
+      </div>
+      <div class="dif-item reveal-up" style="transition-delay:.1s">
+        <div class="dif-number-big">02</div>
+        <div>
+          <div class="dif-right-title">Técnicos Especializados e Apaixonados</div>
+          <p class="dif-right-desc">Nossa equipe passa por treinamentos constantes e é formada por profissionais que realmente amam o que fazem. A diferença está nos detalhes que só um olho treinado percebe.</p>
+          <div class="dif-right-tags">
+            <span class="dif-tag">Certificados</span>
+            <span class="dif-tag">Treinamento contínuo</span>
+            <span class="dif-tag">Especialistas</span>
+          </div>
+        </div>
+      </div>
+      <div class="dif-item reveal-up" style="transition-delay:.15s">
+        <div class="dif-number-big">03</div>
+        <div>
+          <div class="dif-right-title">Atendimento Verdadeiramente Personalizado</div>
+          <p class="dif-right-desc">Cada carro é avaliado individualmente antes de qualquer serviço. Recomendamos o tratamento exato para a real necessidade do seu veículo — sem serviços desnecessários.</p>
+          <div class="dif-right-tags">
+            <span class="dif-tag">Avaliação gratuita</span>
+            <span class="dif-tag">Diagnóstico preciso</span>
+          </div>
+        </div>
+      </div>
+      <div class="dif-item reveal-up" style="transition-delay:.2s">
+        <div class="dif-number-big">04</div>
+        <div>
+          <div class="dif-right-title">Garantia Real de Qualidade</div>
+          <p class="dif-right-desc">Se o resultado não atender às expectativas acordadas, voltamos e refazemos sem custo adicional. Sua satisfação é a base da nossa reputação em Araçatuba.</p>
+          <div class="dif-right-tags">
+            <span class="dif-tag">Satisfação garantida</span>
+            <span class="dif-tag">Sem surpresas</span>
+            <span class="dif-tag">Confiança</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== GALERIA HORIZONTAL ===== -->
+<section id="galeria" class="section" style="padding-bottom:0">
+  <div class="container">
+    <div class="reveal-up">
+      <div class="section-eyebrow">
+        <span class="eyebrow-line"></span>
+        <span class="eyebrow-text">Galeria</span>
+      </div>
+      <h2 class="section-title">Nosso <span class="accent">trabalho</span> em imagens</h2>
+      <div class="section-divider"></div>
+    </div>
+  </div>
+  <div class="gallery-track-wrap" id="gallery-wrap">
+    <div class="gallery-track" id="gallery-track">
+      <div class="gallery-item"><img src="data:image/jpeg;base64,{imgs["hero"]}" alt="Lavagem" loading="lazy"><div class="gallery-item-label">Lavagem Premium</div></div>
+      <div class="gallery-item"><img src="data:image/jpeg;base64,{imgs["polimento"]}" alt="Polimento" loading="lazy"><div class="gallery-item-label">Polimento Técnico</div></div>
+      <div class="gallery-item"><img src="data:image/jpeg;base64,{imgs["higienizacao"]}" alt="Higienização" loading="lazy"><div class="gallery-item-label">Higienização a Vapor</div></div>
+      <div class="gallery-item"><img src="data:image/jpeg;base64,{imgs["interior1"]}" alt="Interior" loading="lazy"><div class="gallery-item-label">Interior Detalhado</div></div>
+      <div class="gallery-item"><img src="data:image/jpeg;base64,{imgs["injecao"]}" alt="Injeção" loading="lazy"><div class="gallery-item-label">Injeção e Extração</div></div>
+      <div class="gallery-item"><img src="data:image/jpeg;base64,{imgs["dashboard"]}" alt="Painel" loading="lazy"><div class="gallery-item-label">Detalhamento do Painel</div></div>
+      <div class="gallery-item"><img src="data:image/jpeg;base64,{imgs["foam"]}" alt="Espuma" loading="lazy"><div class="gallery-item-label">Limpeza com Espuma</div></div>
+      <div class="gallery-item"><img src="data:image/jpeg;base64,{imgs["gear"]}" alt="Console" loading="lazy"><div class="gallery-item-label">Console Detalhado</div></div>
+    </div>
+  </div>
+  <div class="gallery-drag-hint">
+    <span class="drag-hint-line"></span>
+    ← Arraste para navegar →
+    <span class="drag-hint-line"></span>
+  </div>
+</section>
+
+<!-- ===== DEPOIMENTOS ===== -->
+<section id="depoimentos" class="section">
+  <div class="container">
+    <div class="dep-header">
+      <div class="reveal-left">
+        <div class="section-eyebrow">
+          <span class="eyebrow-line"></span>
+          <span class="eyebrow-text">Avaliações</span>
+        </div>
+        <h2 class="section-title">O que nossos <span class="accent">clientes</span> dizem</h2>
+        <div class="section-divider"></div>
+      </div>
+      <div class="dep-controls reveal-right">
+        <button class="dep-btn" id="dep-prev" aria-label="Anterior">
+          <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button class="dep-btn" id="dep-next" aria-label="Próximo">
+          <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="dep-track-wrap">
+      <div class="dep-track" id="dep-track">
+        <div class="dep-card">
+          <div class="dep-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+          <p class="dep-text">"Levei meu Corolla completamente oxidado. Após o polimento de 3 etapas ficou melhor do que quando saiu da concessionária. Trabalho impecável, atenção aos detalhes incrível. Recomendo para qualquer um!"</p>
+          <div class="dep-author"><div class="dep-avatar">R</div><div><div class="dep-name">Ricardo M.</div><div class="dep-car">Toyota Corolla 2019</div></div></div>
+        </div>
+        <div class="dep-card">
+          <div class="dep-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+          <p class="dep-text">"Fiz a higienização completa e vitrificação no meu Compass. O carro saiu de lá brilhando e cheiroso, parecia zero. A equipe é super profissional e o atendimento foi excelente do começo ao fim!"</p>
+          <div class="dep-author"><div class="dep-avatar">A</div><div><div class="dep-name">Ana Paula S.</div><div class="dep-car">Jeep Compass 2022</div></div></div>
+        </div>
+        <div class="dep-card">
+          <div class="dep-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+          <p class="dep-text">"Melhor custo-benefício de Araçatuba. Preço justo e resultado entregue com perfeição. Minha Hilux saiu parecendo nova. Com certeza voltarei e indicarei para todos os meus amigos!"</p>
+          <div class="dep-author"><div class="dep-avatar">F</div><div><div class="dep-name">Fábio C.</div><div class="dep-car">Toyota Hilux 2020</div></div></div>
+        </div>
+        <div class="dep-card">
+          <div class="dep-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+          <p class="dep-text">"A higienização a vapor transformou completamente o interior do meu carro. Tinha um cheiro terrível que outros lugares não conseguiam tirar. A CJ resolveu numa sessão. Serviço excepcional!"</p>
+          <div class="dep-author"><div class="dep-avatar">M</div><div><div class="dep-name">Marcos T.</div><div class="dep-car">Honda HR-V 2021</div></div></div>
+        </div>
+        <div class="dep-card">
+          <div class="dep-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+          <p class="dep-text">"Fiz o pacote premium com polimento + vitrificação. Investimento que valeu cada centavo. 6 meses depois a pintura continua brilhando e a água ainda escorrega perfeita. Parabéns à equipe CJ!"</p>
+          <div class="dep-author"><div class="dep-avatar">J</div><div><div class="dep-name">Juliana R.</div><div class="dep-car">BMW X1 2023</div></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="dep-dots" id="dep-dots">
+      <div class="dep-dot active"></div>
+      <div class="dep-dot"></div>
+      <div class="dep-dot"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CTA ===== -->
+<section id="cta">
+  <div class="cta-grid-bg" aria-hidden="true"></div>
+  <div class="cta-glow" aria-hidden="true"></div>
+  <div class="container cta-content reveal-up">
+    <span class="cta-label">Pronto para transformar seu carro?</span>
+    <h2 class="cta-title">
+      AGENDE AGORA E
+      <span class="line-gold">TRANSFORME</span>
+    </h2>
+    <div style="width:80px;height:1px;background:linear-gradient(to right,transparent,var(--gold),transparent);margin:0 auto 32px"></div>
+    <p class="cta-sub">Entre em contato via WhatsApp. Respondemos rapidamente e agendamos no horário ideal para você.</p>
+    <div class="cta-btns">
+      <a href="https://wa.me/5518991374140?text=Olá!%20Vi%20o%20site%20e%20quero%20agendar%20um%20serviço%20na%20Estética%20CJ." class="btn-whatsapp-large btn-magnetic" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Falar no WhatsApp Agora
+      </a>
+      <a href="tel:+5518991374140" class="btn-outline btn-magnetic">📞 (18) 99137-4140</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CONTATO ===== -->
+<section id="contato" class="section">
+  <div class="container">
+    <div class="contato-grid">
+      <div class="reveal-left">
+        <div class="section-eyebrow">
+          <span class="eyebrow-line"></span>
+          <span class="eyebrow-text">Onde estamos</span>
+        </div>
+        <h2 class="section-title">Visite-nos em <span class="accent">Araçatuba/SP</span></h2>
+        <div class="section-divider"></div>
+        <p>Estamos prontos para receber você e seu veículo. Agende pelo WhatsApp e garanta seu horário com antecedência.</p>
+        <div class="contato-items">
+          <div class="contato-item">
+            <div class="c-icon"><svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.06 1.18 2 2 0 012.03 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 14.92z"/></svg></div>
+            <div><div class="c-label">Telefone / WhatsApp</div><a href="tel:+5518991374140" class="c-val">(18) 99137-4140</a></div>
+          </div>
+          <div class="contato-item">
+            <div class="c-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div>
+              <div class="c-label">Endereço</div>
+              <address class="c-val" style="font-style:normal">Rua Gerson dos Santos, 347<br>Araçatuba – SP · CEP 16078-343</address>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal-right">
+        <div class="horario-card">
+          <h3>⏰ Horários</h3>
+          <div class="h-row"><span class="h-day">Segunda – Sexta</span><span class="h-time">08:00 – 18:00</span></div>
+          <div class="h-row"><span class="h-day">Sábado</span><span class="h-time">08:00 – 14:00</span></div>
+          <div class="h-row"><span class="h-day">Domingo</span><span class="h-time h-closed">Fechado</span></div>
+          <div class="h-row"><span class="h-day">Feriados</span><span class="h-time h-closed">Consultar</span></div>
+          <a href="https://wa.me/5518991374140?text=Olá!%20Quero%20agendar%20um%20horário." class="btn-gold btn-magnetic" style="display:flex;justify-content:center;margin-top:28px" target="_blank" rel="noopener">📅 Agendar Agora</a>
+        </div>
+        <div class="horario-map">
+          <iframe title="Localização Estética CJ" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d59523.38!2d-50.43!3d-21.20!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjHCsDEy!5e0!3m2!1spt!2sbr!4v1" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <img src="data:image/jpeg;base64,{imgs["logo"]}" alt="Logo CJ" loading="lazy">
+      <span class="footer-brand-text">Estética Automotiva CJ</span>
+    </div>
+    <p class="footer-copy">© 2025 Estética Automotiva CJ · Araçatuba / SP<br>Todos os direitos reservados.</p>
+    <div class="footer-social">
+      <a href="https://wa.me/5518991374140" target="_blank" rel="noopener" class="social-link" aria-label="WhatsApp">
+        <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      </a>
+      <a href="https://instagram.com" target="_blank" rel="noopener" class="social-link" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+      </a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ============================================
+   LOADER
+============================================ */
+window.addEventListener('load', () => {{
+  setTimeout(() => {{
+    document.getElementById('loader').classList.add('hidden');
+  }}, 1200);
+}});
+
+/* ============================================
+   CUSTOM CURSOR
+============================================ */
+const dot = document.querySelector('.cursor-dot');
+const ring = document.querySelector('.cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => {{
+  mx = e.clientX; my = e.clientY;
+  dot.style.setProperty('--x', mx + 'px');
+  dot.style.setProperty('--y', my + 'px');
+}});
+
+function lerpCursor() {{
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.setProperty('--rx', rx + 'px');
+  ring.style.setProperty('--ry', ry + 'px');
+  requestAnimationFrame(lerpCursor);
+}}
+lerpCursor();
+
+const hoverTargets = document.querySelectorAll('a, button, .dep-btn, .toggle-btn, .dep-dot, .social-link');
+hoverTargets.forEach(el => {{
+  el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+  el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+}});
+
+/* ============================================
+   MAGNETIC BUTTONS
+============================================ */
+document.querySelectorAll('.btn-magnetic').forEach(btn => {{
+  btn.addEventListener('mousemove', e => {{
+    const rect = btn.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dx = (e.clientX - cx) * 0.25;
+    const dy = (e.clientY - cy) * 0.25;
+    btn.style.transform = `translate(${{dx}}px, ${{dy}}px)`;
+  }});
+  btn.addEventListener('mouseleave', () => {{
+    btn.style.transform = '';
+  }});
+}});
+
+/* ============================================
+   SCROLL PROGRESS
+============================================ */
+window.addEventListener('scroll', () => {{
+  const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+}}, {{ passive: true }});
+
+/* ============================================
+   NAV SCROLL
+============================================ */
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {{
+  nav.classList.toggle('scrolled', window.scrollY > 80);
+}}, {{ passive: true }});
+
+/* ============================================
+   HAMBURGER / MOBILE MENU
+============================================ */
+const hamburger = document.getElementById('hamburger');
+const mobileNav = document.getElementById('mobile-nav');
+hamburger.addEventListener('click', () => {{
+  const open = mobileNav.classList.toggle('open');
+  hamburger.classList.toggle('active');
+  hamburger.setAttribute('aria-expanded', open);
+  document.body.classList.toggle('no-scroll', open);
+}});
+document.querySelectorAll('#mobile-nav a, .mob-link').forEach(a => {{
+  a.addEventListener('click', () => {{
+    mobileNav.classList.remove('open');
+    hamburger.classList.remove('active');
+    hamburger.setAttribute('aria-expanded', false);
+    document.body.classList.remove('no-scroll');
+  }});
+}});
+
+/* ============================================
+   HERO PARALLAX
+============================================ */
+const heroBg = document.getElementById('hero-bg');
+window.addEventListener('scroll', () => {{
+  const sy = window.scrollY;
+  if (sy < window.innerHeight * 1.5) {{
+    heroBg.style.transform = `translateY(${{sy * 0.3}}px)`;
+  }}
+}}, {{ passive: true }});
+
+/* ============================================
+   PARTICLE CANVAS
+============================================ */
+(function() {{
+  const canvas = document.getElementById('hero-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+
+  function resize() {{
+    W = canvas.width = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+  }}
+  resize();
+  window.addEventListener('resize', resize);
+
+  class Particle {{
+    constructor() {{ this.reset(); }}
+    reset() {{
+      this.x = Math.random() * W;
+      this.y = Math.random() * H;
+      this.size = Math.random() * 1.5 + 0.3;
+      this.opacity = Math.random() * 0.5 + 0.1;
+      this.vx = (Math.random() - 0.5) * 0.3;
+      this.vy = -Math.random() * 0.4 - 0.1;
+      this.life = Math.random() * 300 + 100;
+      this.age = 0;
+    }}
+    update() {{
+      this.x += this.vx; this.y += this.vy; this.age++;
+      if (this.age > this.life || this.y < -10) this.reset();
+    }}
+    draw() {{
+      const alpha = Math.sin((this.age / this.life) * Math.PI) * this.opacity;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(201,162,39,${{alpha}})`;
+      ctx.fill();
+    }}
+  }}
+
+  for (let i = 0; i < 80; i++) particles.push(new Particle());
+
+  function animate() {{
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => {{ p.update(); p.draw(); }});
+    requestAnimationFrame(animate);
+  }}
+  animate();
+}})();
+
+/* ============================================
+   COUNTER ANIMATION
+============================================ */
+const counters = document.querySelectorAll('.counter');
+const counterObs = new IntersectionObserver(entries => {{
+  entries.forEach(entry => {{
+    if (!entry.isIntersecting) return;
+    const el = entry.target;
+    const target = +el.dataset.target;
+    const dur = 1800;
+    const start = performance.now();
+    function tick(now) {{
+      const p = Math.min((now - start) / dur, 1);
+      const ease = 1 - Math.pow(1 - p, 4);
+      el.textContent = (target >= 100
+        ? Math.round(ease * target) + '+'
+        : Math.round(ease * target) + (target === 100 ? '%' : '+'));
+      if (p < 1) requestAnimationFrame(tick);
+    }}
+    requestAnimationFrame(tick);
+    counterObs.unobserve(el);
+  }});
+}}, {{ threshold: 0.5 }});
+counters.forEach(c => counterObs.observe(c));
+
+/* ============================================
+   REVEAL ON SCROLL
+============================================ */
+const revealObs = new IntersectionObserver(entries => {{
+  entries.forEach(e => {{
+    if (e.isIntersecting) {{
+      e.target.classList.add('in');
+      revealObs.unobserve(e.target);
+    }}
+  }});
+}}, {{ threshold: 0.12 }});
+
+document.querySelectorAll('.reveal-up, .reveal-left, .reveal-right, .reveal-scale')
+  .forEach(el => revealObs.observe(el));
+
+/* ============================================
+   BEFORE/AFTER SLIDER
+============================================ */
+(function() {{
+  const inner = document.getElementById('slider-inner');
+  const after = document.getElementById('slider-after');
+  const div = document.getElementById('slider-div');
+  const handle = document.getElementById('slider-handle');
+  let dragging = false, pct = 50;
+
+  function setSlider(x) {{
+    const rect = inner.getBoundingClientRect();
+    pct = Math.max(5, Math.min(95, ((x - rect.left) / rect.width) * 100));
+    after.style.clipPath = `inset(0 ${{100-pct}}% 0 0)`;
+    div.style.left = pct + '%';
+    handle.style.left = pct + '%';
+  }}
+
+  handle.addEventListener('mousedown', e => {{ dragging = true; e.preventDefault(); }});
+  handle.addEventListener('touchstart', e => {{ dragging = true; }}, {{ passive: true }});
+  inner.addEventListener('mousedown', e => {{ dragging = true; setSlider(e.clientX); }});
+
+  window.addEventListener('mousemove', e => {{ if (dragging) setSlider(e.clientX); }});
+  window.addEventListener('touchmove', e => {{ if (dragging) setSlider(e.touches[0].clientX); }}, {{ passive: true }});
+  window.addEventListener('mouseup', () => dragging = false);
+  window.addEventListener('touchend', () => dragging = false);
+}})();
+
+/* ============================================
+   PRICE TABLE TOGGLE
+============================================ */
+const toggleBtn = document.getElementById('toggle-table');
+const fullTable = document.getElementById('full-table');
+toggleBtn.addEventListener('click', () => {{
+  const open = fullTable.classList.toggle('open');
+  toggleBtn.textContent = open ? 'Fechar tabela ↑' : 'Ver tabela completa de preços ↓';
+  toggleBtn.setAttribute('aria-expanded', open);
+}});
+
+/* ============================================
+   3D TILT CARDS
+============================================ */
+document.querySelectorAll('[data-tilt]').forEach(card => {{
+  card.addEventListener('mousemove', e => {{
+    const rect = card.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const rx2 = ((e.clientY - cy) / (rect.height / 2)) * -8;
+    const ry2 = ((e.clientX - cx) / (rect.width / 2)) * 8;
+    card.style.transform = `perspective(1000px) rotateX(${{rx2}}deg) rotateY(${{ry2}}deg) scale(1.02)`;
+    const glow = card.querySelector('.price-card-glow');
+    if (glow) {{
+      const gx = ((e.clientX - rect.left) / rect.width) * 100;
+      const gy = ((e.clientY - rect.top) / rect.height) * 100;
+      glow.style.background = `radial-gradient(circle at ${{gx}}% ${{gy}}%, rgba(201,162,39,.12), transparent 60%)`;
+    }}
+  }});
+  card.addEventListener('mouseleave', () => {{
+    card.style.transform = '';
+  }});
+}});
+
+/* ============================================
+   HORIZONTAL GALLERY DRAG
+============================================ */
+(function() {{
+  const wrap = document.getElementById('gallery-wrap');
+  const track = document.getElementById('gallery-track');
+  let isDown = false, startX, scrollLeft;
+
+  wrap.addEventListener('mousedown', e => {{
+    isDown = true;
+    wrap.style.cursor = 'grabbing';
+    startX = e.pageX - wrap.offsetLeft;
+    scrollLeft = track._offset || 0;
+  }});
+  wrap.addEventListener('mouseleave', () => {{ isDown = false; wrap.style.cursor = 'grab'; }});
+  wrap.addEventListener('mouseup', () => {{ isDown = false; wrap.style.cursor = 'grab'; }});
+  wrap.addEventListener('mousemove', e => {{
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - wrap.offsetLeft;
+    const walk = (x - startX) * 1.5;
+    const max = track.scrollWidth - wrap.offsetWidth;
+    track._offset = Math.max(-max, Math.min(0, scrollLeft + walk));
+    track.style.transform = `translateX(${{track._offset}}px)`;
+  }});
+
+  // Touch
+  let touchStartX = 0, touchOffset = 0;
+  wrap.addEventListener('touchstart', e => {{
+    touchStartX = e.touches[0].pageX;
+    touchOffset = track._offset || 0;
+  }}, {{ passive: true }});
+  wrap.addEventListener('touchmove', e => {{
+    const walk = (e.touches[0].pageX - touchStartX) * 1.2;
+    const max = track.scrollWidth - wrap.offsetWidth;
+    track._offset = Math.max(-max, Math.min(0, touchOffset + walk));
+    track.style.transform = `translateX(${{track._offset}}px)`;
+  }}, {{ passive: true }});
+}})();
+
+/* ============================================
+   TESTIMONIALS CAROUSEL
+============================================ */
+(function() {{
+  const track = document.getElementById('dep-track');
+  const dots = document.querySelectorAll('.dep-dot');
+  const cards = track.children;
+  let current = 0;
+  const visibleCount = window.innerWidth < 900 ? 1 : window.innerWidth < 1100 ? 2 : 3;
+  const max = Math.ceil(cards.length / visibleCount) - 1;
+
+  function goTo(idx) {{
+    current = Math.max(0, Math.min(max, idx));
+    const cardW = cards[0].getBoundingClientRect().width;
+    const gap = 24;
+    track.style.transform = `translateX(-${{current * (cardW + gap) * visibleCount}}px)`;
+    dots.forEach((d, i) => d.classList.toggle('active', i === current));
+  }}
+
+  document.getElementById('dep-prev').addEventListener('click', () => goTo(current - 1));
+  document.getElementById('dep-next').addEventListener('click', () => goTo(current + 1));
+  dots.forEach((d, i) => d.addEventListener('click', () => goTo(i)));
+
+  // Auto-advance
+  setInterval(() => {{
+    goTo(current >= max ? 0 : current + 1);
+  }}, 5000);
+}})();
+
+/* ============================================
+   SMOOTH ANCHOR SCROLL
+============================================ */
+document.querySelectorAll('a[href^="#"]').forEach(a => {{
+  a.addEventListener('click', e => {{
+    const target = document.querySelector(a.getAttribute('href'));
+    if (!target) return;
+    e.preventDefault();
+    window.scrollTo({{ top: target.offsetTop - 80, behavior: 'smooth' }});
+  }});
+}});
+</script>
+</body>
+</html>'''
+
+with open('/home/claude/estetica-cj-v2.html', 'w', encoding='utf-8') as f:
+    f.write(html)
+
+import os
+size = os.path.getsize('/home/claude/estetica-cj-v2.html')
+print(f"Done! Size: {size/1024:.0f} KB")
+PYEOF
